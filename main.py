@@ -47,8 +47,9 @@ class CFScraper:
 
     def __create_scraper(self):
         self.scraper = cloudscraper.create_scraper(
-            browser={},  # RNG Browser Agents
-            interpreter='nodejs'
+            browser={'browser': 'firefox', 'platform': 'windows', 'mobile': False},
+            interpreter='nodejs',
+            debug=True,
         )
 
     def get_file_name(self, full_href):

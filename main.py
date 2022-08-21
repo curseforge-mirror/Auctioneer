@@ -28,13 +28,13 @@ class CFScraper:
             log.warning("WARNING: Default Addon Name Being Used")
 
         self.addon_name = addon_name
-        self.curseforge_base = "http://www.curseforge.com"
+        self.curseforge_base = "https://www.curseforge.com"
         self.curseforge_wow_base = "/wow/addons"
         self.curseforge_addon_base = f"{self.curseforge_wow_base}/{self.addon_name}"
         self.curseforge_info_url = f"{self.curseforge_base}{self.curseforge_addon_base}"
         self.curseforge_download_base = f"{self.curseforge_addon_base}/files/"
         self.curseforge_download_full = f"{self.curseforge_base}{self.curseforge_download_base}"
-        self.curseforge_cdn_url = "http://edge.forgecdn.net/files"
+        self.curseforge_cdn_url = "https://edge.forgecdn.net/files"
 
         self.gv_name_scheme_lookup = {
             "WoW Retail": "",
@@ -70,6 +70,7 @@ class CFScraper:
                 f"ERROR: {self.addon_name} failed at download on url"
                 f" {self.curseforge_info_url} -- error code {response.status_code}"
             )
+            log.error(response.text)
             return None
 
         soup = Soup(response.content, features="html.parser")

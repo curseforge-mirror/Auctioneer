@@ -46,6 +46,7 @@ class CFScraper:
         }
 
         self.scraper_api_key = os.getenv("SCRAPER_API_KEY", "b4869d17ea68ef534a4002f55fd75ce8")
+        self.enable_scraper_api = False
 
         self.__create_scraper()
 
@@ -73,14 +74,25 @@ class CFScraper:
         try:
             response = self.scraper.get(url, allow_redirects=True)
         except cloudscraper.exceptions.CloudflareCaptchaProvider:
-            payload = {"api_key": self.scraper_api_key, "url": url, 'country_code': 'us'}
-            response = self.scraper.get("http://api.scraperapi.com", params=payload, allow_redirects=True)
+            if self.enable_scraper_api:
+                log.warning("CloudScraper captcha blocking script -- Swapping to ScraperAPI")
+                payload = {"api_key": self.scraper_api_key, "url": url, 'country_code': 'us'}
+                response = self.scraper.get("http://api.scraperapi.com", params=payload, allow_redirects=True)
+            else:
+                return False
         return response
 
     def get_download_mapping(self):
         response = self.make_request(self.curseforge_info_url)
 
-        if response.status_code != 200:
+        if not response:
+            log.error(
+                f"ERROR: {self.addon_name} failed at download on url"
+                f" {self.curseforge_info_url} -- captcha :("
+            )
+            return None
+
+        elif response.status_code != 200:
             log.error(
                 f"ERROR: {self.addon_name} failed at download on url"
                 f" {self.curseforge_info_url} -- error code {response.status_code}"
@@ -162,7 +174,10 @@ class CFScraper:
         log.info(f"Pulling files for addon: {self.addon_name}")
 
         count = 0
-        while count < 10:
+        while count < 11:
+            if not count < 10:
+                self.enable_scraper_api = True
+
             mapping = self.get_download_mapping()
             if mapping:
                 break

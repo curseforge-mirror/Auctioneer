@@ -1,6 +1,6 @@
 # Auctioneer Mirror
 
-This is a mirror of Norganna's Auctioneer
+This is a mirror of MentalPower's Auctioneer
 
 - [Curseforge URL](https://www.curseforge.com/wow/addons/auctioneer)
 
